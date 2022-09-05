@@ -1,8 +1,10 @@
 import React, { useCallback, useState, useRef, buildMessage, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+
 import events from "./events";
 import slots from "./slots";
+
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
@@ -16,65 +18,159 @@ const localizer = momentLocalizer(moment);
 export default function ReactBigCalendar() {
 
   const [reservationsData, setReservationsData] = useState(events);
-  const [slotData, setSlotData] = useState(events)
-  
-  const [reservation, setReservation] = useState(false)
+  const [slotsData, setSlotsData] = useState(events)
+
   const [slot, setSlot] = useState(false)
+  const [addSlot, setAddSlot] = useState(false)
+  const [isSlotAvailable, setIsSlotAvailable] = useState(false)
+
+  const [reservation, setReservation] = useState(false)
   const [email, setEmail]= useState("")
   const [title, setTitle]= useState("")
 
   const [start, setStart]= useState(new Date)
   const [end, setEnd]= useState(new Date)
 
+  //view slot
   const showSlot = () => setSlot(true)
   const CloseSlot = () => setSlot(false)
+  //create slot
+  const showAddSlot = () => setAddSlot(true)
+  const CloseAddSlot = () => setAddSlot(false)
 
   const showReservation = () => setReservation(true)
   const CloseReservation = () => setReservation(false)
 
-  // create new reservation
-  const CreateReservation = () => {
-    setReservationsData([
-      ...reservationsData,
+  //create slot
+  const CreateSlot = () => {
+    setSlotsData([
+      ...slotsData,
       {
-        title,
         start,
         end
       }
     ]);
     //close modal
-    CloseReservation()
+    CloseAddSlot()
+    //we can now create reservation
+    setIsSlotAvailable(true)
+  }
+
+  // create new reservation
+  const CreateReservation = () => {
+    //verify if the reservation time exist in the slot time 
+    let msg=""
+    for (let i=1; i < slotsData.length; i++){
+      if(start >= slotsData[i].start  && start < slotsData[i].end  && end <= slotsData[i].end && end > slotsData[i].start ){
+        setReservationsData([
+          ...reservationsData,
+          {
+            title,
+            start,
+            end
+          }
+        ]);
+        //close modal
+        CloseReservation()
+      }else{
+        alert('slot not available')
+      }
+
+        // to do: try this switch
+      // switch(slotsData){
+      //   case (start >= slotsData[i].start):
+      //   case (start < slotsData[i].end) :
+      //   case (end <= slotsData[i].end):
+      //   case (end > slotsData[i].start):
+      //     setReservationsData([...reservationsData,{title,start,end}]);
+      //     //close modal 
+      //     CloseReservation();
+      //     break;
+      //   default:
+      //     alert('slot not available')
+      // }
+
+    }
+    
   }
   return (
     <>
     <div className="App">
-      <Button variant="primary" onClick={showSlot} >
-              Add time slot
+      <Button variant="primary" onClick={showAddSlot} >
+              Add  slot
       </Button>
+      <Button variant="primary" onClick={showSlot} >
+             Viw slots
+      </Button>
+      {
+      isSlotAvailable &&
       <Button variant="primary" onClick={showReservation} >
               Create reservation
       </Button>
-      {/* handle reservation */}
+    }
+      {/* view slots */}
       <Modal show={slot} fullscreen={true} onHide={CloseSlot}>
         <Modal.Header closeButton>
           <Modal.Title>Available Slots</Modal.Title>
         </Modal.Header>
-        <Modal.Body>      
+        <Modal.Body>
           <Calendar
-            views={["day", "work_week"]}
-            selectable
+            // views={["day", "agenda", "work_week", "month"]}
+            views={["day", "agenda", "work_week"]}
+            // selectable
             localizer={localizer}
             // defaultDate={new Date()}
             defaultView="day"
-            // events={slotsData}
+            events={slotsData}
             style={{ height: "100vh" }}
             // onSelectEvent={(event) => alert(event.title)}
-            // onSelectSlot={}
+            // onSelectSlot={handleSelect}
+
+            // min={slotsData.start}
+            // max={slotsData.end}
           />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={CloseSlot}>
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* add slots */}
+      <Modal show={addSlot} fullscreen={false} onHide={CloseAddSlot}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create Slot</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="formTitle" >
+                <Form.Label>Start Slot</Form.Label>
+                <DatePicker 
+                selected={start} 
+                onChange={(date) => setStart(date)}
+                showTimeSelect
+                showMonthDropdown
+                dateFormat="MM/d/yyyy h:mm aa"
+                />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formTitle" >
+                <Form.Label>End Slot</Form.Label>
+                <DatePicker 
+                selected={end} 
+                onChange={(date) => setEnd(date)}
+                showTimeSelect
+                showMonthDropdown
+                dateFormat="MM/d/yyyy h:mm aa"
+                />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={CloseAddSlot}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={CreateSlot}>
+            Create
           </Button>
         </Modal.Footer>
       </Modal>
@@ -85,58 +181,55 @@ export default function ReactBigCalendar() {
         </Modal.Header>
         <Modal.Body>
           <Form>
-          <Form.Group className="mb-3" controlId="formEmail" >
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="your email" 
-                autoFocus
-                defaultValue={email}
-                onChange={(e) => setEmail(e.target.value)}
-                // onChange={(e) => setReservationsData({email : e.target.value})}
-                hasValidation={false}
-              />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formTitle" >
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" placeholder="reservation title" 
-                autoFocus
-                defaultValue={title}
-                onChange={(e) => setTitle(e.target.value)}
-                hasValidation={false}
-              />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formTitle" >
-              <Form.Label>Start Reservation</Form.Label>
-              <DatePicker 
-              selected={start} 
-              onChange={(date) => setStart(date)}
-              showTimeSelect
-              showMonthDropdown
-              // minTime={setHours(setMinutes(new Date(), 0), 17)}
-              // maxTime={setHours(setMinutes(new Date(), 30), 20)}
-              dateFormat="MM/d/yyyy h:mm aa"
-              />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formTitle" >
-              <Form.Label>End Reservation</Form.Label>
-              <DatePicker 
-              selected={end} 
-              onChange={(date) => setEnd(date)}
-              showTimeSelect
-              showMonthDropdown
-              // minTime={setHours(setMinutes(new Date(), 0), 17)}
-              // maxTime={setHours(setMinutes(new Date(), 30), 20)}
-              dateFormat="MM/d/yyyy h:mm aa"
-              />
-          </Form.Group>
+            <Form.Group className="mb-3" controlId="formEmail" >
+                <Form.Label>Email</Form.Label>
+                <Form.Control type="email" placeholder="your email" 
+                  autoFocus
+                  defaultValue={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  hasValidation={false}
+                />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formTitle" >
+                <Form.Label>Title</Form.Label>
+                <Form.Control type="text" placeholder="reservation title" 
+                  autoFocus
+                  defaultValue={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  hasValidation={false}
+                />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formTitle" >
+                <Form.Label>Start Reservation</Form.Label>
+                <DatePicker 
+                selected={start} 
+                onChange={(date) => setStart(date)}
+                showTimeSelect
+                showMonthDropdown
+                // minTime={setHours(setMinutes(new Date(), 0), 17)}
+                // maxTime={setHours(setMinutes(new Date(), 30), 20)}
+                dateFormat="MM/d/yyyy h:mm aa"
+                />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formTitle" >
+                <Form.Label>End Reservation</Form.Label>
+                <DatePicker 
+                selected={end} 
+                onChange={(date) => setEnd(date)}
+                showTimeSelect
+                showMonthDropdown
+                // minTime={setHours(setMinutes(new Date(), 0), 17)}
+                // maxTime={setHours(setMinutes(new Date(), 30), 20)}
+                dateFormat="MM/d/yyyy h:mm aa"
+                />
+            </Form.Group>
           </Form>
-          {/* <DatePicker selected={start} onChange={(date) => setStart(date)} /> */}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={CloseReservation}>
             Cancel
           </Button>
           <Button variant="primary" onClick={CreateReservation}>
-          {/* <Button variant="primary" onClick={e => AddReservation(e)}> */}
             Create
           </Button>
         </Modal.Footer>
@@ -149,19 +242,12 @@ export default function ReactBigCalendar() {
         // defaultDate={new Date()}
         defaultView="day"
         events={reservationsData}
-        // events={{
-        //   id: 0,
-        //   title: "All Day Event very long title",
-        //   allDay: true,
-        //   start: new Date,
-        //   end: new Date
-        //   // start: new Date(2022, 8, 12),
-        //   // end: new Date(2022, 9, 3)
-        // }}
         style={{ height: "100vh" }}
         // onSelectEvent={(event) => alert(event.title)}
         // onSelectSlot={handleSelect}
+
       />
+
     </div>
   </>
   );
