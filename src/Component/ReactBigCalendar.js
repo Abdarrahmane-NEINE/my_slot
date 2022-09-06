@@ -12,8 +12,11 @@ import Form from 'react-bootstrap/Form'
 
 import DatePicker from 'react-datepicker'
 
+import { variables } from "../variablesApi";
+
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
+
 
 export default function ReactBigCalendar() {
 
@@ -30,6 +33,126 @@ export default function ReactBigCalendar() {
 
   const [start, setStart]= useState(new Date)
   const [end, setEnd]= useState(new Date)
+
+
+  // availabilities's state
+  const [availabilities, setAvailabilities] = useState([])
+  const [modalTitle, setModalTitle] = useState("")
+  const [availabilitieId, setAvailabilitieId] = useState(0)
+  const [availabilitieStart, setAvailabilitieStart] = useState(new Date)
+  const [availabilitieEnd, setAvailabilitieEnd] = useState(new Date)
+  const [availabilitieCreatedAt, setAvailabilitieCreatedAt] = useState("")
+
+  // reservations's state
+  // const [] = useState()
+  // const [] = useState()
+
+
+  // get availabilitie's data
+  const refreshAvailabilitie = () =>  {
+
+    let headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+
+    fetch(variables.ApiUrl+'availabilitie',
+      {
+      method:'GET',
+      headers:headers,
+      }
+    )
+    .then(res=>res.json())
+    .then(
+      (response)=>{
+      setAvailabilities([
+        ...availabilities,
+        {
+          response
+        }
+      ])
+      },
+      (error) => {
+        alert(error)
+      }
+    )
+  }
+
+  let componentDidMount = () => {
+    refreshAvailabilitie()
+  }
+
+  let changeAvailabilitieStart = (e) => {
+    setAvailabilitieStart(e.target.value)
+  }
+  let changeAvailabilitieEnd = (e) => {
+    setAvailabilitieStart(e.target.value)
+  }
+
+  //create availabilitie
+  const createAvailabilitie = () => {
+    
+    let headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+    
+    let Data ={
+      availabilitieId : availabilitieId,
+      availabilitieStart : availabilitieStart,
+      availabilitieEnd : availabilitieEnd,
+      availabilitieCreatedAt : availabilitieCreatedAt,
+    };
+
+    fetch(variables.ApiUrl+'availabilitie',
+      {
+      method:'POST',
+      headers:headers,
+      body: JSON.stringify(Data) //convert data to JSON
+    })
+    // .then(res => res.text()) //if json format not useful
+    .then(res => res.json())
+    .then(
+      (response)=>{
+        alert(response)
+        refreshAvailabilitie()
+      },
+      (error) => {
+        //console.log("error connexion to the server")
+        alert(error)
+      }
+    )
+  }
+
+  // delete availabilitie
+  const deleteAvailabilitie = (id) => {
+    if (window.confirm('Confirmation ')){
+      let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      };
+
+      fetch(variables.ApiUrl+'availabilitie'+id,
+        {
+        method:'DELETE',
+        headers:headers
+        }
+      )
+      // .then(res => res.text()) //if json format not useful
+      .then(res => res.json())
+      .then(
+        (response)=>{
+          alert(response)
+          refreshAvailabilitie()
+        },
+        (error) => {
+          //console.log("error connexion to the server")
+          alert(error)
+        }
+      )
+    }
+  }
+
 
   //view slot
   const showSlot = () => setSlot(true)
@@ -93,6 +216,7 @@ export default function ReactBigCalendar() {
     }
     
   }
+  
   return (
     <>
     <div className="App">
@@ -123,11 +247,6 @@ export default function ReactBigCalendar() {
             defaultView="day"
             events={slotsData}
             style={{ height: "100vh" }}
-            // onSelectEvent={(event) => alert(event.title)}
-            // onSelectSlot={handleSelect}
-
-            // min={slotsData.start}
-            // max={slotsData.end}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -243,9 +362,6 @@ export default function ReactBigCalendar() {
         defaultView="day"
         events={reservationsData}
         style={{ height: "100vh" }}
-        // onSelectEvent={(event) => alert(event.title)}
-        // onSelectSlot={handleSelect}
-
       />
 
     </div>
