@@ -359,7 +359,7 @@ export default function ReactBigCalendar() {
       </Modal>
 
       {/* retreive list reservation  */}
-      <Modal show={reservationList} fullscreen={true} onHide={reservationList}>
+      <Modal show={reservationList} fullscreen={true} onHide={closeReservationList}>
         <Modal.Header closeButton>
           <Modal.Title>Available Slots</Modal.Title>
         </Modal.Header>
