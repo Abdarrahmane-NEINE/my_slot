@@ -317,7 +317,7 @@ export default function ReactBigCalendar() {
 
       {/* retreive list available slot */}
       <Modal show={slotList} fullscreen={true} onHide={closeSlotList}>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Available Slots</Modal.Title>
         </Modal.Header>
         <Modal.Body>
