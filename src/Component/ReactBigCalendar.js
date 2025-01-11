@@ -39,7 +39,9 @@ export default function ReactBigCalendar() {
   const [reservations, setReservations] = useState([])
   const [reservationList, setReservationList] = useState(false)
 
-
+  useEffect(() => {
+    getReservation();
+  }, []); 
   //get availabilitie stored in db
   const getAvailabilitie = () => {
     let headers = {
@@ -199,7 +201,7 @@ export default function ReactBigCalendar() {
   //view slot Calendar
   const showSlot = () => {
     setSlot(true)
-    // getAvailabilitie()
+    getAvailabilitie()
   }
   const closeSlot = () => setSlot(false)
   //view slot list
