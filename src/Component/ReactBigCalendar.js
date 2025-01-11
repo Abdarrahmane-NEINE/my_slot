@@ -205,7 +205,7 @@ export default function ReactBigCalendar() {
   //view slot list
   const showSlotList = () => {
     setSlotList(true)
-    // getAvailabilitie()
+    getAvailabilitie()
   }
   const closeSlotList = () => setSlotList(false)
 
@@ -215,7 +215,10 @@ export default function ReactBigCalendar() {
 
   const showReservation = () => setReservation(true)
   const closeReservation = () => setReservation(false)
-  const showReservationList = () => setReservationList(true)
+  const showReservationList = () => {
+    setReservationList(true)
+    getReservation()
+  }
   const closeReservationList = () => setReservationList(false)
 
   //create slot
