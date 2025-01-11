@@ -285,7 +285,7 @@ export default function ReactBigCalendar() {
       .then(res => res.json())
       .then(
         (response)=>{       
-          //update reservation's list
+          //update View Reservations List
           getReservation()
           //close modal
           closeReservation()
@@ -306,13 +306,13 @@ export default function ReactBigCalendar() {
         Reservation
       </Button> */}
       <Button variant="primary" onClick={showReservationList} >
-        Reservation's list
+        View Reservations List
       </Button>
       <Button variant="primary" onClick={showSlot} >
-        Calendar of available slot
+        View Calendar of Available Slots
       </Button>
       <Button variant="primary" onClick={showSlotList} >
-        List of available slot
+        View List of Available Slots
       </Button>
 
       {/* retreive list available slot */}
@@ -411,7 +411,7 @@ export default function ReactBigCalendar() {
       {/* view slots */}
       <Modal show={slot} fullscreen={true} onHide={closeSlot}>
         <Modal.Header closeButton>
-          <Modal.Title>Calendar of available slot</Modal.Title>
+          <Modal.Title>View Calendar of Available Slots</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Calendar
@@ -464,7 +464,6 @@ export default function ReactBigCalendar() {
           </Button>
         </Modal.Footer>
       </Modal> */}
-
       <Calendar
         // views={["day", "agenda", "work_week", "month"]}
         views={["day", "agenda", "work_week"]}
