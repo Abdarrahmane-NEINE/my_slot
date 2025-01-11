@@ -361,7 +361,7 @@ export default function ReactBigCalendar() {
       {/* retreive list reservation  */}
       <Modal show={reservationList} fullscreen={true} onHide={closeReservationList}>
         <Modal.Header closeButton>
-          <Modal.Title>Available Slots</Modal.Title>
+          <Modal.Title>Reservation list</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
@@ -411,7 +411,7 @@ export default function ReactBigCalendar() {
       {/* view slots */}
       <Modal show={slot} fullscreen={true} onHide={closeSlot}>
         <Modal.Header closeButton>
-          <Modal.Title>Available Slots</Modal.Title>
+          <Modal.Title>Calendar of available slot</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Calendar
