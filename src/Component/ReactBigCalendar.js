@@ -39,7 +39,9 @@ export default function ReactBigCalendar() {
   const [reservations, setReservations] = useState([])
   const [reservationList, setReservationList] = useState(false)
 
-
+  useEffect(() => {
+    getReservation();
+  }, []); 
   //get availabilitie stored in db
   const getAvailabilitie = () => {
     let headers = {
