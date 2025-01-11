@@ -201,7 +201,7 @@ export default function ReactBigCalendar() {
   //view slot Calendar
   const showSlot = () => {
     setSlot(true)
-    // getAvailabilitie()
+    getAvailabilitie()
   }
   const closeSlot = () => setSlot(false)
   //view slot list
