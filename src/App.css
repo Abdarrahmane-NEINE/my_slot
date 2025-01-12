@@ -49,10 +49,9 @@
 /* row  button */
 .custom-row {
   display: flex;
-  /* flex-wrap: wrap;  */
   flex-direction: row;
   gap: 15px; 
-  width: 100%;
+  width: 90%;
   justify-content: center;
 }
 
