@@ -41,7 +41,7 @@ export default function ReactBigCalendar() {
 
   useEffect(() => {
     getReservation();
-  }, []); 
+  }, []);
   //get availabilitie stored in db
   const getAvailabilitie = () => {
     let headers = {
@@ -348,7 +348,6 @@ export default function ReactBigCalendar() {
             </div>
           </div>
         </div>
-
         {/* retreive list available slot */}
         <Modal show={slotList} fullscreen={true} onHide={closeSlotList}>
           <Modal.Header closeButton>
@@ -448,18 +447,21 @@ export default function ReactBigCalendar() {
             <Modal.Title>View Calendar of Available Slots</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Calendar
-              // views={["day", "agenda", "work_week", "month"]}
-              views={["day", "work_week", "month"]}
-              selectable
-              localizer={localizer}
-              // defaultDate={new Date()}
-              defaultView="day"
-              // events={availabilities}
-              events={slotsData}
-              onSelectSlot={CreateSlot}
-              style={{ height: "100vh" }}
-            />
+            <div className="calendar-container">
+              <h2 className="calendar-title">Availabilitie Calendar</h2>
+              <Calendar
+                // views={["day", "agenda", "work_week", "month"]}
+                views={["day", "work_week", "month"]}
+                selectable
+                localizer={localizer}
+                // defaultDate={new Date()}
+                defaultView="day"
+                // events={availabilities}
+                events={slotsData}
+                onSelectSlot={CreateSlot}
+                style={{ height: "100vh" }}
+              />
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={closeSlot}>
@@ -467,18 +469,20 @@ export default function ReactBigCalendar() {
             </Button>
           </Modal.Footer>
         </Modal>
-        
-        <Calendar
-          // views={["day", "agenda", "work_week", "month"]}
-          views={["day", "agenda", "work_week"]}
-          selectable
-          localizer={localizer}
-          // defaultDate={new Date()}
-          defaultView="day"
-          events={reservationsData}
-          onSelectSlot={createReservation}
-          style={{ height: "100vh" }}
-        />
+        <div className="calendar-container">
+          <h2 >Reservation Calendar</h2>
+          <Calendar
+            // views={["day", "agenda", "work_week", "month"]}
+            views={["day", "agenda", "work_week"]}
+            selectable
+            localizer={localizer}
+            // defaultDate={new Date()}
+            defaultView="day"
+            events={reservationsData}
+            onSelectSlot={createReservation}
+            style={{ height: "100vh" }}
+          />
+        </div>
 
       </div>
     </>
