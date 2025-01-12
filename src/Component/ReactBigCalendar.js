@@ -13,7 +13,7 @@ import DatePicker from 'react-datepicker'
 
 import { getUniqueReservation, getUniqueSlots } from "../utils/dataProcessing";
 
-import { variables } from "../variablesApi";
+import { variables } from "../utils/variablesApi";
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
