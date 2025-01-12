@@ -488,6 +488,12 @@ export default function ReactBigCalendar() {
             // defaultDate={new Date()}
             defaultView="day"
             events={allEvents}
+            eventPropGetter={(event) => {
+              if (event.title === 'Available Slot') {
+                return { style: { backgroundColor: '#d4edda', color: '#155724' } };
+              }
+              return {};
+            }}
             onSelectSlot={handleSelectSlot}
             style={{ height: "100vh" }}
             min={new Date(1972, 1, 1, 8, 0, 0)}
