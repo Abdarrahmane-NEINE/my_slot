@@ -65,7 +65,6 @@ export default function ReactBigCalendar() {
     return newSlots
   }
   const getUniqueReservation = (prevReservation, reservationData, slotData) => {
-    console.log(prevReservation, reservationData, slotData)
     let newReservation = [...prevReservation]
     for (let i = 0; i < slotData.length; i++) {
       for (let j = 0; j < reservationData.length; j++) {
@@ -86,7 +85,6 @@ export default function ReactBigCalendar() {
         }
       }
     }
-    console.log(newReservation)
     return newReservation
   }
   //get availabilitie stored in db
