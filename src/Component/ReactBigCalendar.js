@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 import Table from 'react-bootstrap/Table'
+import showAlert from '../utils/customAlert'
 import DatePicker from 'react-datepicker'
 
 import { getUniqueReservation, getUniqueSlots } from "../utils/dataProcessing";
@@ -45,7 +46,7 @@ export default function ReactBigCalendar() {
 
   // check if the selected slot overlaps with any available slot
   const isValidSlot = (start, end) => {
-    const isValidReservation =  availabilities.some(slot => {
+    const isValidReservation = availabilities.some(slot => {
       const slotStart = new Date(slot.Start)
       const slotEnd = new Date(slot.End)
 
@@ -56,11 +57,18 @@ export default function ReactBigCalendar() {
   const handleSelectSlot = ({ start, end }) => {
     if (isValidSlot(start, end)) {
       createReservation({ start, end })
-    } else{
-      alert("slot not available. Please select an available slot.");
+    } else {
+      showAlert({
+        title: 'info',
+        text: 'slot not available. Please select an available slot',
+        icon: 'info',
+        confirmButtonText: 'ok',
+        showConfirmButton: true,
+        showCancelButton: false
+      })
     }
   };
-  
+
   const availableEvents = availabilities.map(slot => ({
     title: 'Available Slot',
     start: new Date(slot.Start),
@@ -68,7 +76,7 @@ export default function ReactBigCalendar() {
   }));
   // get all event to show available slot and reserved slot
   const allEvents = [...reservationsData, ...availableEvents];
-  
+
   //get availabilitie stored in db
   const getAvailabilitie = () => {
     let headers = {
@@ -91,8 +99,14 @@ export default function ReactBigCalendar() {
           setSlotsData(prevSlots => getUniqueSlots(prevSlots, slotData))
         },
         (error) => {
-          alert('error connexion to the server')
-          // alert(error)
+          showAlert({
+            title: 'error',
+            text: 'error connexion to the server',
+            icon: 'error',
+            confirmButtonText: 'ok',
+            showConfirmButton: true,
+            showCancelButton: false
+          })
         }
       )
 
@@ -134,15 +148,27 @@ export default function ReactBigCalendar() {
                 setReservationsData(prevReservation => getUniqueReservation(prevReservation, reservationData, slotData))
               },
               (error) => {
-                alert('error connexion to the server')
-                // alert(error)
+                showAlert({
+                  title: 'error',
+                  text: 'error connexion to the server',
+                  icon: 'error',
+                  confirmButtonText: 'ok',
+                  showConfirmButton: true,
+                  showCancelButton: false
+                })
               }
             )
 
         },
         (error) => {
-          // alert(error)
-          alert('error connexion to the server')
+          showAlert({
+            title: 'error',
+            text: 'error connexion to the server',
+            icon: 'error',
+            confirmButtonText: 'ok',
+            showConfirmButton: true,
+            showCancelButton: false
+          })
         }
       )
 
@@ -171,11 +197,25 @@ export default function ReactBigCalendar() {
             getReservation()
           },
           (error) => {
-            alert("Error, verify you email and try again")
+            showAlert({
+              title: 'error',
+              text: 'Error, verify you email and try again',
+              icon: 'error',
+              confirmButtonText: 'ok',
+              showConfirmButton: true,
+              showCancelButton: false
+            })
           }
         )
     } else {
-      alert('Email invalid')
+      showAlert({
+        title: 'info',
+        text: 'Email invalid',
+        icon: 'info',
+        confirmButtonText: 'ok',
+        showConfirmButton: true,
+        showCancelButton: false
+      })
     }
   }
   // delete availabilitie
@@ -198,8 +238,14 @@ export default function ReactBigCalendar() {
             getAvailabilitie()
           },
           (error) => {
-            // alert(error)
-            alert('error connexion to the server')
+            showAlert({
+              title: 'error',
+              text: 'error connexion to the server',
+              icon: 'error',
+              confirmButtonText: 'ok',
+              showConfirmButton: true,
+              showCancelButton: false
+            })
           }
         )
     }
@@ -258,8 +304,14 @@ export default function ReactBigCalendar() {
             setIsSlotAvailable(true)
           },
           (error) => {
-            alert("error connexion to the server")
-            // alert(error)
+            showAlert({
+              title: 'error',
+              text: 'error connexion to the server',
+              icon: 'error',
+              confirmButtonText: 'ok',
+              showConfirmButton: true,
+              showCancelButton: false
+            })
           }
         )
     }
@@ -273,9 +325,23 @@ export default function ReactBigCalendar() {
     const CheckEmail = RegExp(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/i);
 
     if ((reservationEmail.length == 0) || (reservationTitle.length == 0)) {
-      alert("Please fill the mendatory fields !!!");
+      showAlert({
+        title: 'info',
+        text: 'Please fill the mendatory fields !!!',
+        icon: 'info',
+        confirmButtonText: 'ok',
+        showConfirmButton: true,
+        showCancelButton: false
+      })
     } else if (!(CheckEmail).test(reservationEmail)) {
-      alert("email invalid !!!");
+      showAlert({
+        title: 'info',
+        text: 'mail invalid !!!',
+        icon: 'info',
+        confirmButtonText: 'ok',
+        showConfirmButton: true,
+        showCancelButton: false
+      })
     } else {
       let headers = {
         'Accept': 'application/json',
@@ -305,8 +371,14 @@ export default function ReactBigCalendar() {
 
           },
           (error) => {
-            console.log("error in the server")
-            // alert(error)
+            showAlert({
+              title: 'error',
+              text: 'error in the server',
+              icon: 'error',
+              confirmButtonText: 'ok',
+              showConfirmButton: true,
+              showCancelButton: false
+            })
           }
         )
     }
