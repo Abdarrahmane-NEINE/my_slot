@@ -40,8 +40,35 @@ export default function ReactBigCalendar() {
 
   useEffect(() => {
     getReservation();
+    getAvailabilitie();
   }, []);
 
+  // check if the selected slot overlaps with any available slot
+  const isValidSlot = (start, end) => {
+    const isValidReservation =  availabilities.some(slot => {
+      const slotStart = new Date(slot.Start)
+      const slotEnd = new Date(slot.End)
+
+      return start >= slotStart && end <= slotEnd
+    });
+    return isValidReservation
+  };
+  const handleSelectSlot = ({ start, end }) => {
+    if (isValidSlot(start, end)) {
+      createReservation({ start, end })
+    } else{
+      alert("slot not available. Please select an available slot.");
+    }
+  };
+  
+  const availableEvents = availabilities.map(slot => ({
+    title: 'Available Slot',
+    start: new Date(slot.Start),
+    end: new Date(slot.End)
+  }));
+  // get all event to show available slot and reserved slot
+  const allEvents = [...reservationsData, ...availableEvents];
+  
   //get availabilitie stored in db
   const getAvailabilitie = () => {
     let headers = {
@@ -103,6 +130,7 @@ export default function ReactBigCalendar() {
             .then(
               (slotData) => {
                 setIsSlotAvailable(true)
+                setSlotsData(prevSlots => getUniqueSlots(prevSlots, slotData))
                 setReservationsData(prevReservation => getUniqueReservation(prevReservation, reservationData, slotData))
               },
               (error) => {
@@ -459,8 +487,14 @@ export default function ReactBigCalendar() {
             localizer={localizer}
             // defaultDate={new Date()}
             defaultView="day"
-            events={reservationsData}
-            onSelectSlot={createReservation}
+            events={allEvents}
+            eventPropGetter={(event) => {
+              if (event.title === 'Available Slot') {
+                return { style: { backgroundColor: '#d4edda', color: '#155724' } };
+              }
+              return {};
+            }}
+            onSelectSlot={handleSelectSlot}
             style={{ height: "100vh" }}
             min={new Date(1972, 1, 1, 8, 0, 0)}
             max={new Date(1972, 1, 1, 23, 0, 0)}

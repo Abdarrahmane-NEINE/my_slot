@@ -1,6 +1,7 @@
 import moment from "moment";
 
 export const getUniqueSlots = (prevSlots, slotData) => {
+    console.log('slots')
     let newSlots = [...prevSlots]
 
     let slotId = 0
