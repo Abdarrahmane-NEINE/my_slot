@@ -13,10 +13,8 @@ import Table from 'react-bootstrap/Table'
 import DatePicker from 'react-datepicker'
 
 import { variables } from "../variablesApi";
-
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
-
 
 export default function ReactBigCalendar() {
 
@@ -460,6 +458,8 @@ export default function ReactBigCalendar() {
                 events={slotsData}
                 onSelectSlot={CreateSlot}
                 style={{ height: "100vh" }}
+                min={new Date(1972, 1, 1, 8, 0, 0)} 
+                max={new Date(1972, 1, 1, 23, 0, 0)} 
               />
             </div>
           </Modal.Body>
@@ -480,7 +480,9 @@ export default function ReactBigCalendar() {
             defaultView="day"
             events={reservationsData}
             onSelectSlot={createReservation}
-            style={{ height: "100vh" }}
+            style={{ height: "100vh"}}
+            min={new Date(1972, 1, 1, 8, 0, 0)}
+            max={new Date(1972, 1, 1, 23, 0, 0)} 
           />
         </div>
 
