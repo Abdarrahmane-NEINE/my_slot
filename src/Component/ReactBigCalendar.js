@@ -311,7 +311,7 @@ export default function ReactBigCalendar() {
           <div className="custom-row">
             <div className="custom-col">
               <button className="custom-button custom-button-primary active">
-                Create a Reservation
+                Reservation Calendar
               </button>
             </div>
             <div className="custom-col">
@@ -321,7 +321,7 @@ export default function ReactBigCalendar() {
                   showReservationList();
                 }}
               >
-                View Reservations List
+                Reservations List
               </button>
             </div>
             <div className="custom-col">
@@ -331,7 +331,7 @@ export default function ReactBigCalendar() {
                   showSlot();
                 }}
               >
-                View Calendar of Available Slots
+                Availability Calendar
               </button>
             </div>
             <div className="custom-col">
@@ -341,7 +341,7 @@ export default function ReactBigCalendar() {
                   showSlotList();
                 }}
               >
-                View List of Available Slots
+                Availabilities List
               </button>
             </div>
           </div>
