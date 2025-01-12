@@ -19,7 +19,7 @@ const localizer = momentLocalizer(moment);
 export default function ReactBigCalendar() {
 
   const [reservationsData, setReservationsData] = useState(events);
-  const [slotsData, setSlotsData] = useState(events)
+  const [slotsData, setSlotsData] = useState([])
 
   const [slot, setSlot] = useState(false)
   const [slotList, setSlotList] = useState(false)
@@ -40,6 +40,53 @@ export default function ReactBigCalendar() {
   useEffect(() => {
     getReservation();
   }, []);
+
+  const getUniqueSlots = (prevSlots, slotData) => {
+    let newSlots = [...prevSlots]
+
+    let slotId = 0
+    let slotStart = ''
+    let slotEnd = ''
+    for (let i = 0; i < slotData.length; i++) {
+      slotId = slotData[i].Id
+      slotStart = slotData[i].Start
+      slotEnd = slotData[i].End
+
+      // check for duplication
+      if (!newSlots.some(item => item.id === slotId)) {
+        newSlots.push({
+          id: slotId,
+          start: moment(slotStart).toDate(),
+          end: moment(slotEnd).toDate(),
+        })
+      }
+    }
+
+    return newSlots
+  }
+  const getUniqueReservation = (prevReservation, reservationData, slotData) => {
+    let newReservation = [...prevReservation]
+    for (let i = 0; i < slotData.length; i++) {
+      for (let j = 0; j < reservationData.length; j++) {
+        // if reservation match an availablility
+        const isValidReservation = reservationData[j].Start >= slotData[i].Start && reservationData[j].Start < slotData[i].End && reservationData[j].End <= slotData[i].End && reservationData[j].End > slotData[i].Start
+        if (isValidReservation) {
+          // prevent duplication
+          if (!newReservation.some(item => item.id === reservationData[j].Id)) {
+            newReservation.push(
+              {
+                id: reservationData[j].Id,
+                title: reservationData[j].Title,
+                start: moment(reservationData[j].Start).toDate(),
+                end: moment(reservationData[j].End).toDate()
+              }
+            )
+          }
+        }
+      }
+    }
+    return newReservation
+  }
   //get availabilitie stored in db
   const getAvailabilitie = () => {
     let headers = {
@@ -55,19 +102,11 @@ export default function ReactBigCalendar() {
     )
       .then(res => res.json())
       .then(
-        (response) => {
+        (slotData) => {
           setIsSlotAvailable(true)
-          let i = 0
-          for (i; i < response.length; i++) {
-            setAvailabilities(response)
-            setSlotsData([
-              ...slotsData,
-              {
-                start: moment(response[i].Start).toDate(),
-                end: moment(response[i].End).toDate()
-              }
-            ]);
-          }
+          setAvailabilities(slotData)
+          // update setSlotsData one time
+          setSlotsData(prevSlots => getUniqueSlots(prevSlots, slotData))
         },
         (error) => {
           alert('error connexion to the server')
@@ -76,6 +115,7 @@ export default function ReactBigCalendar() {
       )
 
   }
+  // fetch all reservation but on calendar show only thos match an available slot
   const getReservation = () => {
     let headers = {
       'Accept': 'application/json',
@@ -92,7 +132,7 @@ export default function ReactBigCalendar() {
       .then(
         (reservationData) => {
           setReservations(reservationData);
-          /* we should verify slot avilable befor crearinf a reservation */
+          /* we should verify slot avilable befor showing a reservation on the calendar*/
           let headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -108,21 +148,7 @@ export default function ReactBigCalendar() {
             .then(
               (slotData) => {
                 setIsSlotAvailable(true)
-                let i = 0
-                for (i; i < slotData.length; i++) {
-                  for (let j = 0; j < reservationData.length; j++) {
-                    if (reservationData[j].Start >= slotData[i].Start && reservationData[j].Start < slotData[i].End && reservationData[j].End <= slotData[i].End && reservationData[j].End > slotData[i].Start) {
-                      setReservationsData([
-                        ...reservationsData,
-                        {
-                          title: reservationData[j].Title,
-                          start: moment(reservationData[j].Start).toDate(),
-                          end: moment(reservationData[j].End).toDate()
-                        }
-                      ]);
-                    }
-                  }
-                }
+                setReservationsData(prevReservation => getUniqueReservation(prevReservation, reservationData, slotData))
               },
               (error) => {
                 alert('error connexion to the server')
@@ -458,8 +484,8 @@ export default function ReactBigCalendar() {
                 events={slotsData}
                 onSelectSlot={CreateSlot}
                 style={{ height: "100vh" }}
-                min={new Date(1972, 1, 1, 8, 0, 0)} 
-                max={new Date(1972, 1, 1, 23, 0, 0)} 
+                min={new Date(1972, 1, 1, 8, 0, 0)}
+                max={new Date(1972, 1, 1, 23, 0, 0)}
               />
             </div>
           </Modal.Body>
@@ -480,9 +506,9 @@ export default function ReactBigCalendar() {
             defaultView="day"
             events={reservationsData}
             onSelectSlot={createReservation}
-            style={{ height: "100vh"}}
+            style={{ height: "100vh" }}
             min={new Date(1972, 1, 1, 8, 0, 0)}
-            max={new Date(1972, 1, 1, 23, 0, 0)} 
+            max={new Date(1972, 1, 1, 23, 0, 0)}
           />
         </div>
 
