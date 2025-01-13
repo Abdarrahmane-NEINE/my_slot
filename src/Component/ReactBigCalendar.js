@@ -13,6 +13,8 @@ import showAlert from '../utils/customAlert'
 import DatePicker from 'react-datepicker'
 
 import { getUniqueReservation, getUniqueSlots } from "../utils/dataProcessing";
+import CustomModal from "./CustomModal";
+import { confirmDeletion } from "../common/confirmation";
 
 import { variables } from "../utils/variablesApi";
 moment.locale("en-GB");
@@ -31,6 +33,13 @@ export default function ReactBigCalendar() {
   const [reservation, setReservation] = useState(false)
   const [activeTab, setActiveTab] = useState("reservation");
 
+  const [confirmModal, setConfirmModal] = useState({
+    show: false,
+    onConfirm: null,
+  });
+  const [isModalEmailVerificationVisible, setisModalEmailVerificationVisible] = useState(false)
+  const [emailValidationData, setEmailValidationData] = useState(null)
+  const [userEmailInput, setUserEmailInput] = useState("")
 
   // availabilities's state
   const [availabilities, setAvailabilities] = useState([])
@@ -174,39 +183,20 @@ export default function ReactBigCalendar() {
 
   }
 
-  //delete reservation
-  const deleteReservation = (id, emailReservation) => {
-    const userEmail = window.prompt('Add your email')
+  // handle email input change
+  const handleEmailChange = (e) => {
+    setUserEmailInput(e.target.value);
+  };
+  const handleDeleteClick = (id, emailReservation) => {
+    setEmailValidationData({ id, emailReservation })
+    setisModalEmailVerificationVisible(true)
+  };
+  // handle email form submission
+  const handleEmailSubmit = (e) => {
+    e.preventDefault();
     //verfy reservation email 
-    if (userEmail == emailReservation) {
-      //send email with reservation id
-      let headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      };
-
-      fetch(variables.ApiUrl + 'reservation/' + id,
-        {
-          method: 'DELETE',
-          headers: headers,
-        }
-      )
-        .then(res => res.text())
-        .then(
-          (response) => {
-            getReservation()
-          },
-          (error) => {
-            showAlert({
-              title: 'error',
-              text: 'Error, verify you email and try again',
-              icon: 'error',
-              confirmButtonText: 'ok',
-              showConfirmButton: true,
-              showCancelButton: false
-            })
-          }
-        )
+    if (emailValidationData && userEmailInput === emailValidationData.emailReservation) {
+      deleteReservation(emailValidationData.id)
     } else {
       showAlert({
         title: 'info',
@@ -218,24 +208,70 @@ export default function ReactBigCalendar() {
       })
     }
   }
-  // delete availabilitie
-  const deleteAvailabilitie = (id) => {
-    if (window.confirm('Confirme delete ')) {
-      let headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      };
 
-      fetch(variables.ApiUrl + 'availabilitie/' + id,
-        {
-          method: 'DELETE',
-          headers: headers,
+  //delete reservation
+  const deleteReservation = (id) => {
+    //send email with reservation id
+    let headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+
+    fetch(variables.ApiUrl + 'reservation/' + id,
+      {
+        method: 'DELETE',
+        headers: headers,
+      }
+    )
+      .then(res => res.text())
+      .then(
+        (response) => {
+          console.log('delete resposne', response)
+          getReservation()
+          setUserEmailInput("")
+          setEmailValidationData(null)
+          setisModalEmailVerificationVisible(false)
+          showAlert({
+            title: 'success',
+            text: 'The reservation has been deleted successfully.',
+            icon: 'success',
+            confirmButtonText: 'ok',
+            showConfirmButton: true,
+            showCancelButton: false
+          })
+        },
+        (error) => {
+          showAlert({
+            title: 'error',
+            text: 'Error, verify you email and try again',
+            icon: 'error',
+            confirmButtonText: 'ok',
+            showConfirmButton: true,
+            showCancelButton: false
+          })
         }
       )
-        .then(res => res.text())
+
+  }
+
+  const deleteAvailabilitie = async (id) => {
+    const isConfirmed = await confirmDeletion();
+
+    if (isConfirmed) {
+      // Proceed with deletion
+      const headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      };
+
+      fetch(variables.ApiUrl + "availabilitie/" + id, {
+        method: "DELETE",
+        headers,
+      })
+        .then((res) => res.text())
         .then(
           (response) => {
-            getAvailabilitie()
+            getAvailabilitie(); // Refresh availabilities
           },
           (error) => {
             showAlert({
@@ -247,10 +283,15 @@ export default function ReactBigCalendar() {
               showCancelButton: false
             })
           }
-        )
+        );
     }
-  }
+  };
 
+  const closeEmailVerificationModal = () => {
+    setisModalEmailVerificationVisible(false)
+    setUserEmailInput("")
+    setEmailValidationData(null)
+  };
   //view slot Calendar
   const showSlot = () => {
     setSlot(true)
@@ -471,7 +512,7 @@ export default function ReactBigCalendar() {
         </Modal>
 
         {/* retreive list reservation  */}
-        <Modal show={reservationList} fullscreen={true} onHide={closeReservationList}>
+        <Modal show={reservationList} fullscreen={true} onHide={closeReservationList} >
           <Modal.Header closeButton>
             <Modal.Title>Reservation list</Modal.Title>
           </Modal.Header>
@@ -501,7 +542,8 @@ export default function ReactBigCalendar() {
                       <td>
                         <button type="button"
                           className="btn btn-light mr-1"
-                          onClick={() => deleteReservation(reservation.Id, reservation.Email)}>
+                          onClick={() => handleDeleteClick(reservation.Id, reservation.Email)}
+                        >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
                             <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
                           </svg>
@@ -519,7 +561,6 @@ export default function ReactBigCalendar() {
             </Button>
           </Modal.Footer>
         </Modal>
-
         {/* view slots */}
         <Modal show={slot} fullscreen={true} onHide={closeSlot}>
           <Modal.Header closeButton>
@@ -550,6 +591,7 @@ export default function ReactBigCalendar() {
             </Button>
           </Modal.Footer>
         </Modal>
+
         <div className="calendar-container">
           <h2 >Reservation Calendar</h2>
           <Calendar
@@ -572,7 +614,42 @@ export default function ReactBigCalendar() {
             max={new Date(1972, 1, 1, 23, 0, 0)}
           />
         </div>
-
+        
+        {/* modal to confirm reservation delete */}
+        <Modal show={isModalEmailVerificationVisible} onHide={closeEmailVerificationModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Email Confirmation</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleEmailSubmit}>
+              <Form.Group controlId="emailInput">
+                <Form.Label>Enter your email to confirm deletion:</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter your email"
+                  value={userEmailInput}
+                  onChange={handleEmailChange}
+                  required
+                />
+              </Form.Group>
+              <Button variant="primary" type="submit" className="mt-3">
+                Confirm
+              </Button>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={closeEmailVerificationModal}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <CustomModal
+          show={confirmModal.show}
+          title="Confirm Deletion"
+          body="Are you sure you want to delete this reservation?"
+          onClose={() => setConfirmModal({ show: false, onConfirm: null })}
+          onConfirm={confirmModal.onConfirm}
+        />
       </div>
     </>
   );
