@@ -22,7 +22,8 @@ const localizer = momentLocalizer(moment);
 
 export default function ReactBigCalendar() {
 
-  const [reservationsData, setReservationsData] = useState(events);
+  //reservationsData => contain only valid reservation (reservation that correspond to an availability)
+  const [validReservation, setValidReservation] = useState(events);
   const [slotsData, setSlotsData] = useState([])
 
   const [slot, setSlot] = useState(false)
@@ -41,10 +42,9 @@ export default function ReactBigCalendar() {
   const [emailValidationData, setEmailValidationData] = useState(null)
   const [userEmailInput, setUserEmailInput] = useState("")
 
-  // availabilities's state
   const [availabilities, setAvailabilities] = useState([])
 
-  // reservations's state
+  // reservations = contain all reservation.
   const [reservations, setReservations] = useState([])
   const [showReservationList, setShowReservationList] = useState(false)
   // all events
@@ -61,8 +61,8 @@ export default function ReactBigCalendar() {
       end: new Date(slot.End),
     }));
     
-    setAllEvents([...reservationsData, ...availableEvents]);
-  }, [reservationsData, availabilities]);
+    setAllEvents([...validReservation, ...availableEvents]);
+  }, [validReservation, availabilities]);
   
   // check if the selected slot overlaps with any available slot
   const isValidSlot = (start, end) => {
@@ -157,7 +157,7 @@ export default function ReactBigCalendar() {
               (slotData) => {
                 setIsSlotAvailable(true)
                 setSlotsData(prevSlots => getUniqueSlots(prevSlots, slotData))
-                setReservationsData(prevReservation => getUniqueReservation(prevReservation, reservationData, slotData))
+                setValidReservation(prevReservation => getUniqueReservation(prevReservation, reservationData, slotData))
               },
               (error) => {
                 showAlert({
@@ -231,7 +231,7 @@ export default function ReactBigCalendar() {
         (response) => {
           // getReservation()
           // getAvailabilitie()
-          setReservationsData((prevReservationsData) => prevReservationsData.filter(
+          setValidReservation((prevValidReservation) => prevValidReservation.filter(
             (reservation) => reservation.id !== id
           ));
 
