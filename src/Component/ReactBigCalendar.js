@@ -46,7 +46,7 @@ export default function ReactBigCalendar() {
 
   // reservations's state
   const [reservations, setReservations] = useState([])
-  const [reservationList, setReservationList] = useState(false)
+  const [showReservationList, setShowReservationList] = useState(false)
   // all events
   const [allEvents, setAllEvents] = useState([]);
 
@@ -318,11 +318,11 @@ export default function ReactBigCalendar() {
 
   const showReservation = () => setReservation(true)
   const closeReservation = () => setReservation(false)
-  const showReservationList = () => {
-    setReservationList(true)
+  const handleShowReservationList = () => {
+    setShowReservationList(true)
     getReservation()
   }
-  const closeReservationList = () => setReservationList(false)
+  const closeReservationList = () => setShowReservationList(false)
 
   //create slot
   const CreateSlot = ({ start, end }) => {
@@ -447,7 +447,7 @@ export default function ReactBigCalendar() {
               <button
                 className="custom-button custom-button-success"
                 onClick={() => {
-                  showReservationList();
+                  handleShowReservationList();
                 }}
               >
                 Reservations List
@@ -519,7 +519,7 @@ export default function ReactBigCalendar() {
         </Modal>
 
         {/* retreive list reservation  */}
-        <Modal show={reservationList} fullscreen={true} onHide={closeReservationList} >
+        <Modal show={showReservationList} fullscreen={true} onHide={closeReservationList} >
           <Modal.Header closeButton>
             <Modal.Title>Reservation list</Modal.Title>
           </Modal.Header>
