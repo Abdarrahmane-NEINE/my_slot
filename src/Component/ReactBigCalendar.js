@@ -47,12 +47,23 @@ export default function ReactBigCalendar() {
   // reservations's state
   const [reservations, setReservations] = useState([])
   const [reservationList, setReservationList] = useState(false)
+  // all events
+  const [allEvents, setAllEvents] = useState([]);
 
   useEffect(() => {
     getReservation();
     getAvailabilitie();
   }, []);
-
+  useEffect(() => {
+    const availableEvents = availabilities.map(slot => ({
+      title: 'Available Slot',
+      start: new Date(slot.Start),
+      end: new Date(slot.End),
+    }));
+    
+    setAllEvents([...reservationsData, ...availableEvents]);
+  }, [reservationsData, availabilities]);
+  
   // check if the selected slot overlaps with any available slot
   const isValidSlot = (start, end) => {
     const isValidReservation = availabilities.some(slot => {
@@ -77,14 +88,6 @@ export default function ReactBigCalendar() {
       })
     }
   };
-
-  const availableEvents = availabilities.map(slot => ({
-    title: 'Available Slot',
-    start: new Date(slot.Start),
-    end: new Date(slot.End)
-  }));
-  // get all event to show available slot and reserved slot
-  const allEvents = [...reservationsData, ...availableEvents];
 
   //get availabilitie stored in db
   const getAvailabilitie = () => {
@@ -226,8 +229,12 @@ export default function ReactBigCalendar() {
       .then(res => res.text())
       .then(
         (response) => {
-          console.log('delete resposne', response)
-          getReservation()
+          // getReservation()
+          // getAvailabilitie()
+          setReservationsData((prevReservationsData) => prevReservationsData.filter(
+            (reservation) => reservation.id !== id
+          ));
+
           setUserEmailInput("")
           setEmailValidationData(null)
           setisModalEmailVerificationVisible(false)
