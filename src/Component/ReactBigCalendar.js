@@ -24,6 +24,7 @@ export default function ReactBigCalendar() {
 
   //reservationsData => contain only valid reservation (reservation that correspond to an availability)
   const [validReservation, setValidReservation] = useState(events);
+  // slot data to be showed on calendar
   const [slotsData, setSlotsData] = useState([])
 
   const [slot, setSlot] = useState(false)
@@ -41,7 +42,7 @@ export default function ReactBigCalendar() {
   const [isModalEmailVerificationVisible, setisModalEmailVerificationVisible] = useState(false)
   const [emailValidationData, setEmailValidationData] = useState(null)
   const [userEmailInput, setUserEmailInput] = useState("")
-
+  // list of available slot 
   const [availabilities, setAvailabilities] = useState([])
 
   // reservations = contain all reservation.
@@ -279,7 +280,14 @@ export default function ReactBigCalendar() {
         .then((res) => res.text())
         .then(
           (response) => {
-            getAvailabilitie(); // Refresh availabilities
+            // remove item from availabilities
+            setAvailabilities((prevAvailability) => prevAvailability.filter(
+              (availability) => availability.Id !== id)
+            ); 
+            // remove item from slot calendar
+            setSlotsData((prevSlot) => prevSlot.filter(
+              (availability) => availability.id !== id)
+            ); 
           },
           (error) => {
             showAlert({
@@ -584,7 +592,6 @@ export default function ReactBigCalendar() {
                 localizer={localizer}
                 // defaultDate={new Date()}
                 defaultView="day"
-                // events={availabilities}
                 events={slotsData}
                 onSelectSlot={CreateSlot}
                 style={{ height: "100vh" }}
