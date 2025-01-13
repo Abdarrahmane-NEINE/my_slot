@@ -229,10 +229,11 @@ export default function ReactBigCalendar() {
       .then(res => res.text())
       .then(
         (response) => {
-          // getReservation()
-          // getAvailabilitie()
           setValidReservation((prevValidReservation) => prevValidReservation.filter(
             (reservation) => reservation.id !== id
+          ));
+          setReservations((prevReservation) => prevReservation.filter(
+            (reservation) => reservation.Id !== id
           ));
 
           setUserEmailInput("")
