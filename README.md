@@ -1,70 +1,41 @@
-# Getting Started with Create React App
+# Meeting Scheduler App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This web application allows users to publish their availability and let others book meetings with them seamlessly. It provides an intuitive interface for managing availabilities and reservations while ensuring secure email verification for reservation deletions.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Problem Statement
 
-### `npm start`
+Imagine people frequently ask you for available slots in your calendar. Initially, you can respond manually, but as requests grow, this becomes impractical. This application simplifies the process by publishing your availability online, enabling others to book their meetings autonomously.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+- **View and Manage Availabilities**
+  - Publish, update, or delete available time slots.
+- **Book Reservations**
+  - Users can book reservations by providing a title, start time, end time, and email.
+- **Secure Deletion**
+  - Reservations can be deleted only if the provided email matches the one used during creation.
+- **Real-time Updates**
+  - The application updates the calendar dynamically based on user actions.
+- **Database Integration**
+  - Persistent storage for availabilities and reservations using SQLite.
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- **Node.js**: Install from [Node.js Official Site](https://nodejs.org/)
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Abdarrahmane-NEINE/my_slot.git
+   cd my_slot
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Backend Repository
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The backend code for this project is available in a separate repository. You can find it here:
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+https://github.com/Abdarrahmane-NEINE/backend_my_slot.git
