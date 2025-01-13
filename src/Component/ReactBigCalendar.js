@@ -27,7 +27,7 @@ export default function ReactBigCalendar() {
   const [slotsData, setSlotsData] = useState([])
 
   const [slot, setSlot] = useState(false)
-  const [slotList, setSlotList] = useState(false)
+  const [showSlotList, setShowSlotList] = useState(false)
   const [addSlot, setAddSlot] = useState(false)
   const [isSlotAvailable, setIsSlotAvailable] = useState(false)
 
@@ -307,11 +307,11 @@ export default function ReactBigCalendar() {
   }
   const closeSlot = () => setSlot(false)
   //view slot list
-  const showSlotList = () => {
-    setSlotList(true)
+  const handleShowSlotList = () => {
+    setShowSlotList(true)
     getAvailabilitie()
   }
-  const closeSlotList = () => setSlotList(false)
+  const closeSlotList = () => setShowSlotList(false)
 
   //create slot
   const showAddSlot = () => setAddSlot(true)
@@ -468,7 +468,7 @@ export default function ReactBigCalendar() {
               <button
                 className="custom-button custom-button-info"
                 onClick={() => {
-                  showSlotList();
+                  handleShowSlotList();
                 }}
               >
                 Availabilities List
@@ -477,7 +477,7 @@ export default function ReactBigCalendar() {
           </div>
         </div>
         {/* retreive list available slot */}
-        <Modal show={slotList} fullscreen={true} onHide={closeSlotList}>
+        <Modal show={showSlotList} fullscreen={true} onHide={closeSlotList}>
           <Modal.Header closeButton>
             <Modal.Title>Available Slots</Modal.Title>
           </Modal.Header>
