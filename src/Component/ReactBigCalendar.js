@@ -22,11 +22,13 @@ const localizer = momentLocalizer(moment);
 
 export default function ReactBigCalendar() {
 
-  const [reservationsData, setReservationsData] = useState(events);
+  //reservationsData => contain only valid reservation (reservation that correspond to an availability)
+  const [validReservation, setValidReservation] = useState(events);
+  // slot data to be showed on calendar
   const [slotsData, setSlotsData] = useState([])
 
   const [slot, setSlot] = useState(false)
-  const [slotList, setSlotList] = useState(false)
+  const [showSlotList, setShowSlotList] = useState(false)
   const [addSlot, setAddSlot] = useState(false)
   const [isSlotAvailable, setIsSlotAvailable] = useState(false)
 
@@ -40,19 +42,29 @@ export default function ReactBigCalendar() {
   const [isModalEmailVerificationVisible, setisModalEmailVerificationVisible] = useState(false)
   const [emailValidationData, setEmailValidationData] = useState(null)
   const [userEmailInput, setUserEmailInput] = useState("")
-
-  // availabilities's state
+  // list of available slot 
   const [availabilities, setAvailabilities] = useState([])
 
-  // reservations's state
+  // reservations = contain all reservation.
   const [reservations, setReservations] = useState([])
-  const [reservationList, setReservationList] = useState(false)
+  const [showReservationList, setShowReservationList] = useState(false)
+  // all events
+  const [allEvents, setAllEvents] = useState([]);
 
   useEffect(() => {
     getReservation();
     getAvailabilitie();
   }, []);
-
+  useEffect(() => {
+    const availableEvents = availabilities.map(slot => ({
+      title: 'Available Slot',
+      start: new Date(slot.Start),
+      end: new Date(slot.End),
+    }));
+    
+    setAllEvents([...validReservation, ...availableEvents]);
+  }, [validReservation, availabilities]);
+  
   // check if the selected slot overlaps with any available slot
   const isValidSlot = (start, end) => {
     const isValidReservation = availabilities.some(slot => {
@@ -77,14 +89,6 @@ export default function ReactBigCalendar() {
       })
     }
   };
-
-  const availableEvents = availabilities.map(slot => ({
-    title: 'Available Slot',
-    start: new Date(slot.Start),
-    end: new Date(slot.End)
-  }));
-  // get all event to show available slot and reserved slot
-  const allEvents = [...reservationsData, ...availableEvents];
 
   //get availabilitie stored in db
   const getAvailabilitie = () => {
@@ -154,7 +158,7 @@ export default function ReactBigCalendar() {
               (slotData) => {
                 setIsSlotAvailable(true)
                 setSlotsData(prevSlots => getUniqueSlots(prevSlots, slotData))
-                setReservationsData(prevReservation => getUniqueReservation(prevReservation, reservationData, slotData))
+                setValidReservation(prevReservation => getUniqueReservation(prevReservation, reservationData, slotData))
               },
               (error) => {
                 showAlert({
@@ -226,8 +230,13 @@ export default function ReactBigCalendar() {
       .then(res => res.text())
       .then(
         (response) => {
-          console.log('delete resposne', response)
-          getReservation()
+          setValidReservation((prevValidReservation) => prevValidReservation.filter(
+            (reservation) => reservation.id !== id
+          ));
+          setReservations((prevReservation) => prevReservation.filter(
+            (reservation) => reservation.Id !== id
+          ));
+
           setUserEmailInput("")
           setEmailValidationData(null)
           setisModalEmailVerificationVisible(false)
@@ -271,7 +280,14 @@ export default function ReactBigCalendar() {
         .then((res) => res.text())
         .then(
           (response) => {
-            getAvailabilitie(); // Refresh availabilities
+            // remove item from availabilities
+            setAvailabilities((prevAvailability) => prevAvailability.filter(
+              (availability) => availability.Id !== id)
+            ); 
+            // remove item from slot calendar
+            setSlotsData((prevSlot) => prevSlot.filter(
+              (availability) => availability.id !== id)
+            ); 
           },
           (error) => {
             showAlert({
@@ -299,11 +315,11 @@ export default function ReactBigCalendar() {
   }
   const closeSlot = () => setSlot(false)
   //view slot list
-  const showSlotList = () => {
-    setSlotList(true)
+  const handleShowSlotList = () => {
+    setShowSlotList(true)
     getAvailabilitie()
   }
-  const closeSlotList = () => setSlotList(false)
+  const closeSlotList = () => setShowSlotList(false)
 
   //create slot
   const showAddSlot = () => setAddSlot(true)
@@ -311,11 +327,11 @@ export default function ReactBigCalendar() {
 
   const showReservation = () => setReservation(true)
   const closeReservation = () => setReservation(false)
-  const showReservationList = () => {
-    setReservationList(true)
+  const handleShowReservationList = () => {
+    setShowReservationList(true)
     getReservation()
   }
-  const closeReservationList = () => setReservationList(false)
+  const closeReservationList = () => setShowReservationList(false)
 
   //create slot
   const CreateSlot = ({ start, end }) => {
@@ -440,7 +456,7 @@ export default function ReactBigCalendar() {
               <button
                 className="custom-button custom-button-success"
                 onClick={() => {
-                  showReservationList();
+                  handleShowReservationList();
                 }}
               >
                 Reservations List
@@ -460,7 +476,7 @@ export default function ReactBigCalendar() {
               <button
                 className="custom-button custom-button-info"
                 onClick={() => {
-                  showSlotList();
+                  handleShowSlotList();
                 }}
               >
                 Availabilities List
@@ -469,7 +485,7 @@ export default function ReactBigCalendar() {
           </div>
         </div>
         {/* retreive list available slot */}
-        <Modal show={slotList} fullscreen={true} onHide={closeSlotList}>
+        <Modal show={showSlotList} fullscreen={true} onHide={closeSlotList}>
           <Modal.Header closeButton>
             <Modal.Title>Available Slots</Modal.Title>
           </Modal.Header>
@@ -512,7 +528,7 @@ export default function ReactBigCalendar() {
         </Modal>
 
         {/* retreive list reservation  */}
-        <Modal show={reservationList} fullscreen={true} onHide={closeReservationList} >
+        <Modal show={showReservationList} fullscreen={true} onHide={closeReservationList} >
           <Modal.Header closeButton>
             <Modal.Title>Reservation list</Modal.Title>
           </Modal.Header>
@@ -576,7 +592,6 @@ export default function ReactBigCalendar() {
                 localizer={localizer}
                 // defaultDate={new Date()}
                 defaultView="day"
-                // events={availabilities}
                 events={slotsData}
                 onSelectSlot={CreateSlot}
                 style={{ height: "100vh" }}
