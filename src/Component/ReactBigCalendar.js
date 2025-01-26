@@ -15,7 +15,7 @@ import DatePicker from 'react-datepicker'
 import { getUniqueReservation, getUniqueSlots } from "../utils/dataProcessing";
 import CustomModal from "./CustomModal";
 import { confirmDeletion, confirmSlot } from "../common/confirmation";
-
+import CreateReservationModal  from "../modals/CreateReservationModal"
 import { variables } from "../utils/variablesApi";
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
@@ -39,6 +39,9 @@ export default function ReactBigCalendar() {
     show: false,
     onConfirm: null,
   });
+  const [showCreateReservationModal, setShowCreateReservationModal] = useState(false)
+  const [selectedSlot, setSelectedSlot] = useState(null);
+
   const [isModalEmailVerificationVisible, setisModalEmailVerificationVisible] = useState(false)
   const [emailValidationData, setEmailValidationData] = useState(null)
   const [userEmailInput, setUserEmailInput] = useState("")
@@ -61,10 +64,10 @@ export default function ReactBigCalendar() {
       start: new Date(slot.Start),
       end: new Date(slot.End),
     }));
-    
+
     setAllEvents([...validReservation, ...availableEvents]);
   }, [validReservation, availabilities]);
-  
+
   // check if the selected slot overlaps with any available slot
   const isValidSlot = (start, end) => {
     const isValidReservation = availabilities.some(slot => {
@@ -283,11 +286,11 @@ export default function ReactBigCalendar() {
             // remove item from availabilities
             setAvailabilities((prevAvailability) => prevAvailability.filter(
               (availability) => availability.Id !== id)
-            ); 
+            );
             // remove item from slot calendar
             setSlotsData((prevSlot) => prevSlot.filter(
               (availability) => availability.id !== id)
-            ); 
+            );
           },
           (error) => {
             showAlert({
@@ -373,24 +376,18 @@ export default function ReactBigCalendar() {
         )
     }
   }
-
+  
   // create new reservation
   const createReservation = ({ start, end }) => {
-    const reservationEmail = window.prompt('Add your email')
-    const reservationTitle = window.prompt('Title of reservation')
+    setSelectedSlot({ start, end })
+    setShowCreateReservationModal(true)
+  }
+  const handleReservationSubmit = (data) => {
+    const {reservationEmail, reservationTitle} = data
     //check emil validation
     const CheckEmail = RegExp(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/i);
 
-    if ((reservationEmail.length == 0) || (reservationTitle.length == 0)) {
-      showAlert({
-        title: 'info',
-        text: 'Please fill the mendatory fields !!!',
-        icon: 'info',
-        confirmButtonText: 'ok',
-        showConfirmButton: true,
-        showCancelButton: false
-      })
-    } else if (!(CheckEmail).test(reservationEmail)) {
+    if (!(CheckEmail).test(reservationEmail)) {
       showAlert({
         title: 'info',
         text: 'mail invalid !!!',
@@ -408,8 +405,8 @@ export default function ReactBigCalendar() {
       let Data = {
         Title: reservationTitle,
         Email: reservationEmail,
-        Start: moment(start).toDate(),
-        End: moment(end).toDate()
+        Start: moment(selectedSlot.start).toDate(),
+        End: moment(selectedSlot.end).toDate()
       };
 
       fetch(variables.ApiUrl + 'reservation',
@@ -629,7 +626,7 @@ export default function ReactBigCalendar() {
             max={new Date(1972, 1, 1, 23, 0, 0)}
           />
         </div>
-        
+
         {/* modal to confirm reservation delete */}
         <Modal show={isModalEmailVerificationVisible} onHide={closeEmailVerificationModal}>
           <Modal.Header closeButton>
@@ -664,6 +661,12 @@ export default function ReactBigCalendar() {
           body="Are you sure you want to delete this reservation?"
           onClose={() => setConfirmModal({ show: false, onConfirm: null })}
           onConfirm={confirmModal.onConfirm}
+        />
+
+        <CreateReservationModal
+          show={showCreateReservationModal}
+          onClose={() => setShowCreateReservationModal(false)}
+          onSubmit={handleReservationSubmit}
         />
       </div>
     </>
