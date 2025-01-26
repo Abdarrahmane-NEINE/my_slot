@@ -14,7 +14,7 @@ import DatePicker from 'react-datepicker'
 
 import { getUniqueReservation, getUniqueSlots } from "../utils/dataProcessing";
 import CustomModal from "./CustomModal";
-import { confirmDeletion } from "../common/confirmation";
+import { confirmDeletion, confirmSlot } from "../common/confirmation";
 
 import { variables } from "../utils/variablesApi";
 moment.locale("en-GB");
@@ -334,9 +334,9 @@ export default function ReactBigCalendar() {
   const closeReservationList = () => setShowReservationList(false)
 
   //create slot
-  const CreateSlot = ({ start, end }) => {
-    const slotSelected = window.confirm('slot between ' + moment(start).format("DD/MM/YYYY HH:MM") + ' and ' + moment(end).format("DD/MM/YYYY HH:MM"))
-    if (slotSelected) {
+  const CreateSlot = async ({ start, end }) => {
+    const isSlotConfirmed = await confirmSlot(start, end)
+    if (isSlotConfirmed) {
       let headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
