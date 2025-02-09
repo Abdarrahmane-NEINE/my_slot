@@ -16,7 +16,7 @@ import { getUniqueReservation, getUniqueSlots } from "../utils/dataProcessing";
 import CustomModal from "./CustomModal";
 import { confirmDeletion, confirmSlot } from "../common/confirmation";
 import CreateReservationModal  from "../modals/CreateReservationModal"
-import { variables } from "../utils/variablesApi";
+import { endpoints } from "../utils/variablesApi";
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
@@ -61,8 +61,8 @@ export default function ReactBigCalendar() {
   useEffect(() => {
     const availableEvents = availabilities.map(slot => ({
       title: 'Available Slot',
-      start: new Date(slot.Start),
-      end: new Date(slot.End),
+      start: new Date(slot.start),
+      end: new Date(slot.end),
     }));
 
     setAllEvents([...validReservation, ...availableEvents]);
@@ -71,8 +71,8 @@ export default function ReactBigCalendar() {
   // check if the selected slot overlaps with any available slot
   const isValidSlot = (start, end) => {
     const isValidReservation = availabilities.some(slot => {
-      const slotStart = new Date(slot.Start)
-      const slotEnd = new Date(slot.End)
+      const slotStart = new Date(slot.start)
+      const slotEnd = new Date(slot.end)
 
       return start >= slotStart && end <= slotEnd
     });
@@ -100,7 +100,7 @@ export default function ReactBigCalendar() {
       'Content-Type': 'application/json'
     };
 
-    fetch(variables.ApiUrl + 'availabilitie',
+    fetch(endpoints.availabilities,
       {
         method: 'GET',
         headers: headers,
@@ -134,7 +134,7 @@ export default function ReactBigCalendar() {
       'Content-Type': 'application/json'
     };
 
-    fetch(variables.ApiUrl + 'reservation',
+    fetch(endpoints.reservations,
       {
         method: 'GET',
         headers: headers,
@@ -150,7 +150,7 @@ export default function ReactBigCalendar() {
             'Content-Type': 'application/json'
           };
 
-          fetch(variables.ApiUrl + 'availabilitie',
+          fetch(endpoints.availabilities,
             {
               method: 'GET',
               headers: headers,
@@ -224,7 +224,7 @@ export default function ReactBigCalendar() {
       'Content-Type': 'application/json'
     };
 
-    fetch(variables.ApiUrl + 'reservation/' + id,
+    fetch(endpoints.reservations + '/' + id,
       {
         method: 'DELETE',
         headers: headers,
@@ -237,7 +237,7 @@ export default function ReactBigCalendar() {
             (reservation) => reservation.id !== id
           ));
           setReservations((prevReservation) => prevReservation.filter(
-            (reservation) => reservation.Id !== id
+            (reservation) => reservation.id !== id
           ));
 
           setUserEmailInput("")
@@ -276,7 +276,7 @@ export default function ReactBigCalendar() {
         "Content-Type": "application/json",
       };
 
-      fetch(variables.ApiUrl + "availabilitie/" + id, {
+      fetch(endpoints.availabilities + '/' + id, {
         method: "DELETE",
         headers,
       })
@@ -285,7 +285,7 @@ export default function ReactBigCalendar() {
           (response) => {
             // remove item from availabilities
             setAvailabilities((prevAvailability) => prevAvailability.filter(
-              (availability) => availability.Id !== id)
+              (availability) => availability.id !== id)
             );
             // remove item from slot calendar
             setSlotsData((prevSlot) => prevSlot.filter(
@@ -346,11 +346,11 @@ export default function ReactBigCalendar() {
       };
 
       let Data = {
-        Start: moment(start).toDate(),
-        End: moment(end).toDate()
+        start: moment(start).toDate(),
+        end: moment(end).toDate()
       };
 
-      fetch(variables.ApiUrl + 'availabilitie',
+      fetch(endpoints.availabilities,
         {
           method: 'POST',
           headers: headers,
@@ -403,13 +403,13 @@ export default function ReactBigCalendar() {
       };
 
       let Data = {
-        Title: reservationTitle,
-        Email: reservationEmail,
-        Start: moment(selectedSlot.start).toDate(),
-        End: moment(selectedSlot.end).toDate()
+        title: reservationTitle,
+        email: reservationEmail,
+        start: moment(selectedSlot.start).toDate(),
+        end: moment(selectedSlot.end).toDate()
       };
 
-      fetch(variables.ApiUrl + 'reservation',
+      fetch(endpoints.reservations,
         {
           method: 'POST',
           headers: headers,
@@ -499,13 +499,13 @@ export default function ReactBigCalendar() {
                 <tbody>
                   {availabilities.map((availabilitie, k) =>
                     <tr key={k}>
-                      <td>{availabilitie.Id}</td>
-                      <td>{moment(availabilitie.Start).format("DD/MM/YYYY HH:MM")}</td>
-                      <td>{moment(availabilitie.End).format("DD/MM/YYYY HH:MM")}</td>
+                      <td>{availabilitie.id}</td>
+                      <td>{moment(availabilitie.start).format("DD/MM/YYYY HH:MM")}</td>
+                      <td>{moment(availabilitie.end).format("DD/MM/YYYY HH:MM")}</td>
                       <td>
                         <button type="button"
                           className="btn btn-light mr-1"
-                          onClick={() => deleteAvailabilitie(availabilitie.Id)}>
+                          onClick={() => deleteAvailabilitie(availabilitie.id)}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
                             <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
                           </svg>
@@ -546,16 +546,16 @@ export default function ReactBigCalendar() {
                 <tbody>
                   {reservations.map((reservation, k) =>
                     <tr key={k}>
-                      <td>{reservation.Id}</td>
-                      <td>{reservation.Title}</td>
-                      <td>{reservation.Email}</td>
-                      <td>{moment(reservation.Start).format("DD/MM/YYYY HH:MM")}</td>
-                      <td>{moment(reservation.End).format("DD/MM/YYYY HH:MM")}</td>
+                      <td>{reservation.id}</td>
+                      <td>{reservation.title}</td>
+                      <td>{reservation.email}</td>
+                      <td>{moment(reservation.start).format("DD/MM/YYYY HH:MM")}</td>
+                      <td>{moment(reservation.end).format("DD/MM/YYYY HH:MM")}</td>
                       <td>{moment(reservation.CreatedAt).format("DD/MM/YYYY HH:MM")}</td>
                       <td>
                         <button type="button"
                           className="btn btn-light mr-1"
-                          onClick={() => handleDeleteClick(reservation.Id, reservation.Email)}
+                          onClick={() => handleDeleteClick(reservation.id, reservation.email)}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
                             <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
