@@ -16,7 +16,7 @@ import { getUniqueReservation, getUniqueSlots } from "../utils/dataProcessing";
 import CustomModal from "./CustomModal";
 import { confirmDeletion, confirmSlot } from "../common/confirmation";
 import CreateReservationModal  from "../modals/CreateReservationModal"
-import { variables } from "../utils/variablesApi";
+import { endpoints } from "../utils/variablesApi";
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
@@ -100,7 +100,7 @@ export default function ReactBigCalendar() {
       'Content-Type': 'application/json'
     };
 
-    fetch(variables.ApiUrl + 'availabilitie',
+    fetch(endpoints.availabilities,
       {
         method: 'GET',
         headers: headers,
@@ -134,7 +134,7 @@ export default function ReactBigCalendar() {
       'Content-Type': 'application/json'
     };
 
-    fetch(variables.ApiUrl + 'reservation',
+    fetch(endpoints.reservations,
       {
         method: 'GET',
         headers: headers,
@@ -150,7 +150,7 @@ export default function ReactBigCalendar() {
             'Content-Type': 'application/json'
           };
 
-          fetch(variables.ApiUrl + 'availabilitie',
+          fetch(endpoints.availabilities,
             {
               method: 'GET',
               headers: headers,
@@ -224,7 +224,7 @@ export default function ReactBigCalendar() {
       'Content-Type': 'application/json'
     };
 
-    fetch(variables.ApiUrl + 'reservation/' + id,
+    fetch(endpoints.reservations + '/' + id,
       {
         method: 'DELETE',
         headers: headers,
@@ -276,7 +276,7 @@ export default function ReactBigCalendar() {
         "Content-Type": "application/json",
       };
 
-      fetch(variables.ApiUrl + "availabilitie/" + id, {
+      fetch(endpoints.availabilities + '/' + id, {
         method: "DELETE",
         headers,
       })
@@ -350,7 +350,7 @@ export default function ReactBigCalendar() {
         end: moment(end).toDate()
       };
 
-      fetch(variables.ApiUrl + 'availabilitie',
+      fetch(endpoints.availabilities,
         {
           method: 'POST',
           headers: headers,
@@ -409,7 +409,7 @@ export default function ReactBigCalendar() {
         end: moment(selectedSlot.end).toDate()
       };
 
-      fetch(variables.ApiUrl + 'reservation',
+      fetch(endpoints.reservations,
         {
           method: 'POST',
           headers: headers,
